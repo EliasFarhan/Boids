@@ -1,0 +1,12 @@
+{
+    "name": "boids",
+    "version-string": "1.0",
+    "dependencies": [
+        "sfml",
+        "imgui",
+        "imgui-sfml",
+        "fmt",
+      "spdlog",
+      "benchmark"
+    ]
+}
