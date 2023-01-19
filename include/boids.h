@@ -39,6 +39,13 @@ struct Vec2f
         return {x-v.x, y-v.y};
     }
 
+    constexpr Vec2f& operator-=(Vec2f v)
+    {
+        x -= v.x;
+        y -= v.y;
+        return *this;
+    }
+
     constexpr Vec2f operator*(float f) const
     {
         return {x*f, y*f};
@@ -80,9 +87,11 @@ struct Vec2f
         return (*this) / Magnitude();
     }
 
-    constexpr static Radian AngleBetween(Vec2f v1, Vec2f v2)
+    static Radian AngleBetween(Vec2f v1, Vec2f v2)
     {
-        return Radian{ std::acos(Dot(v1, v2)/v1.Magnitude()/v2.Magnitude()) };
+        const auto dot = Dot(v1, v2);
+        const auto det = v1.x * v2.y - v1.y * v2.x;
+        return Radian{ std::atan2(det, dot) };
     }
 
     constexpr static Vec2f up()
@@ -97,7 +106,7 @@ struct Vec2f
         return { (cos * x) - (sin * y) , (sin * x) + (cos * y) };
     }
 
-    explicit operator sf::Vector2f() const { return sf::Vector2f(x, y); }
+    explicit operator sf::Vector2f() const { return {x, y}; }
 };
 
 
