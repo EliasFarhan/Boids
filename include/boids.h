@@ -5,6 +5,7 @@
 #include <cmath>
 #include <vector>
 #include <span>
+#include <cassert>
 
 #include "const.h"
 
@@ -87,9 +88,8 @@ struct Vec2f
     [[nodiscard]] Vec2f Normalized() const
     {
         const auto length = Magnitude();
-        if (length == 0.0f)
-            std::terminate();
-        return (*this) / Magnitude();
+        assert (length != 0.0f && "Normalizing zero-vector");
+        return (*this) / length;
     }
 
     static Radian AngleBetween(Vec2f v1, Vec2f v2)

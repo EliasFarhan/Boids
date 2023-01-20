@@ -5,6 +5,7 @@
 #include <numbers>
 #include <array>
 #include <cassert>
+#include <algorithm>
 
 namespace boids
 {
@@ -94,7 +95,6 @@ void BoidManager::Update(float dt)
         const auto deltaToCenter = worldCenter - boid.pos;
         if(deltaToCenter.SquareMagnitude() > worldCenterFactor*worldCenterFactor)
         {
-
             totalForce += deltaToCenter / worldCenterFactor;
         }
 
@@ -164,17 +164,22 @@ void BoidManager::Update2(float dt)
 
             while(ref != nullptr)
             {
-                if(ref->boid == &previousBoids_[i])
+                if(ref->boid == &previousBoids_[i]) [[unlikely]]
                 {
                     ref = ref->nextRef;
                     continue;
                 }
                 const auto& neighborBoid = *ref->boid;
                 const auto delta = neighborBoid.pos - boid.pos;
-                const auto distance = delta.Magnitude();
+                const auto distance = delta.SquareMagnitude();
+                if(distance > radius * radius) [[unlikely]]
+                {
+                    ref = ref->nextRef;
+                    continue;
+                }
                 neighborVel += neighborBoid.vel;
                 const Vec2f dir = delta.Normalized();
-                avoidForce -= dir * avoidFactor / distance;
+                avoidForce -= dir * avoidFactor / std::sqrt(distance);
 
                 center += neighborBoid.pos;
                 ++count;
@@ -184,7 +189,7 @@ void BoidManager::Update2(float dt)
         }
         Vec2f totalForce;
         //converge to center of mass
-        if (count != 0)
+        if (count != 0) [[unlikely]]
         {
             center = center / static_cast<float>(count);
             const auto deltaToCenter = center - boid.pos;
@@ -198,7 +203,7 @@ void BoidManager::Update2(float dt)
         totalForce += avoidForce;
 
         //align direction
-        if (count != 0)
+        if (count != 0) [[unlikely]]
         {
             neighborVel = neighborVel / static_cast<float>(count);
             const auto deltaVel = neighborVel - boid.vel;
@@ -212,7 +217,6 @@ void BoidManager::Update2(float dt)
         const auto deltaToCenter = worldCenter - boid.pos;
         if (deltaToCenter.SquareMagnitude() > worldCenterFactor * worldCenterFactor)
         {
-
             totalForce += deltaToCenter / worldCenterFactor;
         }
 

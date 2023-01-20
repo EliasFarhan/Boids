@@ -9,7 +9,6 @@ constexpr float radius = 1.5f;
 constexpr float avoidFactor = 0.35f;
 constexpr float alignFactor = 0.2f;
 constexpr float alignDeadZone = 0.01f;
-constexpr float convergeFactor = 2.0f;
 constexpr float convergeDeadZone = 0.01f;
 constexpr float maxSpeed = 4.0f;
 constexpr float pixelPerMeter = 100.0f;
