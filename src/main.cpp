@@ -41,13 +41,13 @@ int main()
             }
             if(event.type == sf::Event::MouseWheelScrolled)
             {
-                view.zoom((1.0f+boids::zoomFactor*event.mouseWheelScroll.delta * dt.asSeconds()));
+                view.zoom((1.0f-boids::zoomFactor*event.mouseWheelScroll.delta * dt.asSeconds()));
                 window.setView(view);
             }
 
             ImGui::SFML::ProcessEvent(window, event);
         }
-        boidManager.Update(dt.asSeconds());
+        boidManager.Update2(dt.asSeconds());
         const auto boids = boidManager.GetBoids();
         for(std::size_t i = 0; i < boids::boidsNumber; ++i)
         {
@@ -58,11 +58,11 @@ int main()
             topVertex.position = static_cast<sf::Vector2f>(boid.pos * boids::pixelPerMeter + boids::Vec2f::up().Rotated(angle)*boids::boidPixelHeight);
 
             auto& leftVertex = array[i * 3 + 1];
-            leftVertex.position = static_cast<sf::Vector2f>(boid.pos * boids::pixelPerMeter + boids::Vec2f(-0.5, 0.0f).Rotated(angle) * boids::boidPixelHeight);
+            leftVertex.position = static_cast<sf::Vector2f>(boid.pos * boids::pixelPerMeter + boids::Vec2f{ -0.5, 0.0f }.Rotated(angle) * boids::boidPixelHeight);
 
 
             auto& rightVertex = array[i * 3 + 2];
-            rightVertex.position = static_cast<sf::Vector2f>(boid.pos * boids::pixelPerMeter + boids::Vec2f(0.5f, 0.0f).Rotated(angle) * boids::boidPixelHeight);
+            rightVertex.position = static_cast<sf::Vector2f>(boid.pos * boids::pixelPerMeter + boids::Vec2f{ 0.5f, 0.0f }.Rotated(angle) * boids::boidPixelHeight);
         }
 
         ImGui::SFML::Update(window, dt);

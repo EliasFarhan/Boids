@@ -6,6 +6,8 @@
 #include <vector>
 #include <span>
 
+#include "const.h"
+
 namespace boids
 {
 
@@ -82,8 +84,11 @@ struct Vec2f
         return std::sqrt(SquareMagnitude());
     }
 
-    [[nodiscard]] constexpr Vec2f Normalized() const
+    [[nodiscard]] Vec2f Normalized() const
     {
+        const auto length = Magnitude();
+        if (length == 0.0f)
+            std::terminate();
         return (*this) / Magnitude();
     }
 
@@ -106,9 +111,16 @@ struct Vec2f
         return { (cos * x) - (sin * y) , (sin * x) + (cos * y) };
     }
 
-    explicit operator sf::Vector2f() const { return {x, y}; }
+    explicit operator sf::Vector2f() const { return sf::Vector2f{x, y}; }
 };
 
+constexpr auto worldCenter = Vec2f{ width / pixelPerMeter * 0.5f,height / pixelPerMeter * 0.5f };
+inline std::size_t CalculateIndex(Vec2f pos)
+{
+    const auto x = static_cast<std::size_t>((pos.x + worldRadius / pixelPerMeter - worldCenter.x + margin) / radius);
+    const auto y = static_cast<std::size_t>((pos.y + worldRadius / pixelPerMeter - worldCenter.y + margin) / radius);
+    return y * worldWidth + x % worldWidth;
+}
 
 struct Boid
 {
@@ -116,16 +128,25 @@ struct Boid
     Vec2f vel;
 };
 
+struct BoidRef
+{
+    Boid* boid = nullptr;
+    BoidRef* nextRef = nullptr;
+};
+
 class BoidManager
 {
 public:
     void Begin();
     void Update(float dt);
+    void Update2(float dt);
     [[nodiscard]] std::span<Boid> GetBoids() { return currentBoids_; }
     [[nodiscard]] std::size_t GetMaxNeighborCount() const { return maxCount_; }
 private:
     std::vector<Boid> previousBoids_;
     std::vector<Boid> currentBoids_;
     std::size_t maxCount_ = 0;
+    std::vector<BoidRef> boidsRefs_;
+    std::vector<BoidRef*> locationMap_;
 };
 } // namespace boids

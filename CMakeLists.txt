@@ -27,8 +27,8 @@ target_link_libraries(boids PRIVATE sfml-system sfml-graphics sfml-window imgui:
 target_include_directories(boids PRIVATE include/)
 
 
-#find_package(benchmark CONFIG REQUIRED)
+find_package(benchmark CONFIG REQUIRED)
 
-#add_executable(bench bench/compute.cpp src/conway.cpp)
-#target_link_libraries(bench PRIVATE benchmark::benchmark benchmark::benchmark_main)
-#target_include_directories(bench PRIVATE include/)
+add_executable(bench bench/bench_update.cpp src/boids.cpp)
+target_link_libraries(bench PRIVATE benchmark::benchmark benchmark::benchmark_main)
+target_include_directories(bench PRIVATE include/)
